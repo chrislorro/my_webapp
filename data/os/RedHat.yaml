@@ -1,0 +1,8 @@
+---
+my_webapp::run_user: root
+my_webapp::web_package: httpd
+my_webapp::web_service: httpd
+my_webapp::websvc_user: 
+  httpd:
+    home: /home
+    groups: linx_webapps

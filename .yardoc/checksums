@@ -1,0 +1,7 @@
+manifests/init.pp 51fae86c153b8a7350077449cd2b10facdecf632
+manifests/user.pp 3e9cb978b1b7cd4fc4edbbde5cf21602dcf6a60c
+manifests/config.pp 07ea842aab030a3f95b225a2c05bf4b489d069cd
+manifests/install.pp a64b7d6ab5dd3a69ed8723f9c2e3691c2cf1d49f
+manifests/service.pp dfb84204b56d2c065a56dcdab5d347654c885ba7
+manifests/vhost_svc.pp e6c3f4c9c2c43a4b88e5eb50e78bb99dbf6ed6c1
+functions/failed.pp 5f00bacafc8a9914f411f1bda66fb3e789cc56aa

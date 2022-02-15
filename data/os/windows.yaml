@@ -1,0 +1,8 @@
+---
+my_webapp::run_user: Administrator
+my_webapp::package: apache-httpd
+my_webapp::service: apache
+my_webapp::config_path:
+my_webapp::websvc_user: 
+  apache:
+    home: "C:/Users"
