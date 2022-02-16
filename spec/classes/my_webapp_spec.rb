@@ -70,14 +70,6 @@ describe 'my_webapp' do
 
       describe 'Base configuration' do
 
-        let(:conf_path) do
-          if os.include?('windows')
-            'C:/Users/Administrator/AppData/Roaming/Apache24/conf'
-          else
-            '/etc/httpd/conf'
-          end
-        end
-
         context 'my_webapp::install on #{os}' do
           let(:facts) { os_facts }
           
@@ -86,8 +78,99 @@ describe 'my_webapp' do
           it { is_expected.not_to contain_class('chocolatey') unless %r{windows}.match?(os)}
           
           it { is_expected.to contain_package('apache-httpd').with('ensure' => 'installed') if %r{windows}.match?(os)}
+          it { is_expected.to contain_class('chocolatey') if %r{windows}.match?(os)}
         end
+
+        context 'my_webapp::config on #{os}' do
+          let(:facts) { os_facts }
+
+          let(:http_conf) do
+            if os.include?('windows')
+              'C:/Users/Administrator/AppData/Roaming/Apache24/conf/httpd.conf'
+            else
+              '/etc/httpd/conf/httpd.conf'
+            end
+          end
+
+          # let(:params) do
+          #   if os.include?('windows')
+          #     {
+          #       :http_conf => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf',
+          #       :owner => 'Administrator',
+          #     }
+          #   else
+          #     {
+          #       :http_conf =>'/etc/httpd/conf',
+          #       :owner => 'root',
+          #     }
+          #   end
+          # end
+
+          # on_supported_os.each do |os, os_facts|
+          #   let(:facts) { os_facts }
+          #   it do   
+          #     is_expected.to contain_file(http_conf).with(
+          #       'ensure'  => 'file',
+          #       'mode'    => '0644',
+          #       'owner'   => owner,
+          #     ).that_requires('Class[My_webapp::Install]')
+          #   end
+          # end
+
+          it { is_expected.to compile }
+          case os_facts[:kernel]
+          when 'Linux'
+            it do   
+              is_expected.to contain_file(http_conf).with(
+                'ensure'  => 'file',
+                'mode'    => '0644',
+                'owner'   => 'root',
+              ).that_requires('Class[My_webapp::Install]')
+            end
+          when 'windows'
+            it do   
+              is_expected.to contain_file(http_conf).with(
+                'ensure'  => 'file',
+                'mode'    => '0644',
+                'owner'   => 'Administrator',
+              ).that_requires('Class[My_webapp::Install]')
+            end
+          end
+        end
+
+        context 'mywebapp::virtual_svc' do 
+          let(:facts) { os_facts }
         
+          let(:conf_path) do
+            if os.include?('windows')
+              'C:/Users/Administrator/AppData/Roaming/Apache24/conf'
+            else
+              '/etc/httpd/conf'
+            end
+          end
+
+          it { is_expected.to compile }
+          case os_facts[:kernel]
+          when 'Linux'
+            it do 
+              is_expected.to contain_my_webapp__virtual_svc('example').with(
+              'config_path' => '/etc/httpd/conf',
+              'listen_ip'   => '192.168.254.2',
+              'websvc_port' => 8080,
+              'servicename' => 'example',
+              )
+            end
+          when 'windows'
+            it do 
+              is_expected.to contain_my_webapp__virtual_svc('example').with(
+              'config_path' => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf',
+              'listen_ip'   => '192.168.254.2',
+              'websvc_port' => 8080,
+              'servicename' => 'example',
+              )
+            end
+          end
+        end
 
       end
     end
