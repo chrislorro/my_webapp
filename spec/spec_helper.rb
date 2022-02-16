@@ -6,6 +6,8 @@ end
 
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet-facts'
+require 'puppet-catalog_rspec'
+
 
 require 'spec_helper_local' if File.file?(File.join(File.dirname(__FILE__), 'spec_helper_local.rb'))
 
@@ -67,6 +69,12 @@ def ensure_module_defined(module_name)
   module_name.split('::').reduce(Object) do |last_module, next_module|
     last_module.const_set(next_module, Module.new) unless last_module.const_defined?(next_module, false)
     last_module.const_get(next_module, false)
+  end
+end
+
+RSpec.configure do |c|
+  c.after(:suite) do
+    RSpec::Puppet::Coverage.report!
   end
 end
 

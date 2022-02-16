@@ -5,19 +5,21 @@
 # @example
 #   include my_webapp
 class my_webapp (
-
-  String          $pkg_version,
-  String          $run_user,
-  String          $servicename,
-  String          $listen_ip,
-  Integer         $websvc_port,
-  String          $web_package,
-  String          $web_service,
-  Optional[String]          $ensure_vhost = undef,
-  Boolean         $http_enable,
+  String               $pkg_version,
+  String               $app_user,
+  String               $servicename,
+  String               $web_package,
+  String               $web_service,
+  String               $svc_owner,
+  String               $http_config,
+  Integer              $websvc_port,
+  Boolean              $http_enable,
+  Hash                 $websvc_user,
+  Stdlib::IP::Address  $listen_ip,
+  Stdlib::Absolutepath $config_path,
   Enum['stopped',
-      'running']  $http_ensure,
-  Hash            $websvc_user,
+      'running']       $http_ensure,
+  Optional[String]     $ensure_vhost = undef,
 ){
 
   if $facts['kernel'] == 'windows' {

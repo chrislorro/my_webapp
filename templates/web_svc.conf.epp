@@ -1,0 +1,12 @@
+<%- | String  $servicename,
+      String  $listen_ip,
+      Integer $websvc_port,
+| -%>
+
+# Ensure that Apache listens on port <%= $websvc_port %>
+Listen <%= $websvc_port %>
+<VirtualHost *:80>
+    DocumentRoot /www/<%= $servicename %>
+    ServerName www.<%= $servicename %>.com
+
+</VirtualHost>

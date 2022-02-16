@@ -6,9 +6,8 @@
 #   include my_webapp::install
 class my_webapp::install {
 
-  include my_webapp
-
   if $facts['kernel'] == 'windows' {
+    include chocolatey
     Package { provider => 'chocolatey'}
   }
 

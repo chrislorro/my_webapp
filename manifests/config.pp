@@ -6,24 +6,21 @@
 #   include my_webapp::config
 class my_webapp::config {
 
-  include my_webapp
+  $app_user = lookup('my_webapp::websvc_user')
 
-  $file_config = $facts['kernel'] ? {
-    'Windows' => {
-                    'path'      => "C:/Users/${my_webapp::run_user}/AppData/Roaming/Apache24/conf/httpd.conf",
-                    'owner'     => 'Administrator',
-                  },
-    default   => {
-                    'path'      => '/etc/httpd/conf/httpd.conf',
-                    'owner'     => 'root',
-                    'group'     => 'root',
-                  }
+  $app_user.each |$user, $config| {
+    user { $user:
+      ensure => present,
+      *      => $config,
+    }
   }
 
-  file { 'httpd.conf':
+  $http_config = "${my_webapp::config_path}/${my_webapp::http_config}"
+
+  file { $http_config:
     ensure  => file,
     mode    => '0644',
-    *       => $file_config,
+    owner   => $my_webapp::app_user,
     require => Class['my_webapp::install']
   }
 
@@ -32,12 +29,13 @@ class my_webapp::config {
       default: {
         warning("Apache not supported on ${facts['kernel']}")
       }
-      # 'Linux': {
-      #   my_webapp::vhost_svc { $my_webapp::servicename:
-      #     listen_ip   => $my_webapp::listen_ip,
-      #     websvc_port => $my_webapp::websvc_port,
-      #   }
-      # }
+      'Linux': {
+        my_webapp::virtual_svc { $my_webapp::servicename:
+          config_path => $my_webapp::config_path,
+          listen_ip   => $my_webapp::listen_ip,
+          websvc_port => $my_webapp::websvc_port,
+        }
+      }
     }
   }
 }

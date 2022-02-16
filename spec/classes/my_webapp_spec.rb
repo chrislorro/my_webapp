@@ -7,7 +7,89 @@ describe 'my_webapp' do
     context "on #{os}" do
       let(:facts) { os_facts }
 
-      it { is_expected.to compile }
+      describe 'with defauls' do
+        it do
+          is_expected.to compile.with_all_deps
+          is_expected.to contain_class('my_webapp::install')
+          is_expected.to contain_class('my_webapp::config').that_requires('Class[my_webapp::install]')
+          is_expected.to contain_class('my_webapp::service').that_subscribes_to('Class[my_webapp::config]')
+        end
+      
+        context 'class default settings' do
+          it { is_expected.to compile }
+          it { is_expected.to contain_class('Settings')}
+
+          case os_facts[:kernel]
+          when 'Linux'
+            it do
+              is_expected.to contain_class('My_webapp').with(
+                'pkg_version'  => 'installed',
+                'app_user'     => 'root',
+                'servicename'  => 'example',
+                'web_package'  => 'httpd',
+                'web_service'  => 'httpd',
+                'svc_owner'    => 'root',
+                'http_config'  => 'httpd.conf',
+                'websvc_port'  => '8080',
+                'http_enable'  => 'true',
+                'websvc_user'  => '{"httpd"=>{"home"=>"/home", "groups"=>"linx_webapps", "managehome"=>true}}',
+                'listen_ip'    => '192.168.254.2',
+                'config_path'  => '/etc/httpd/conf',
+                'http_ensure'  => 'running',
+                'ensure_vhost' => 'present',
+              )
+            end
+          when 'windows'
+            it do
+              is_expected.to contain_class('My_webapp').with(
+              'pkg_version'  => 'installed',
+              'app_user'     => 'Administrator',
+              'servicename'  => 'example',
+              'web_package'  => 'apache-httpd',
+              'web_service'  => 'apache',
+              'svc_owner'    => 'Administrator',
+              'http_config'  => 'httpd.conf',
+              'websvc_port'  => '8080',
+              'http_enable'  => 'true',
+              'websvc_user'  => '{"apache"=>{"home"=>"C:/Users"}}',
+              'listen_ip'    => '192.168.254.2',
+              'config_path'  => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf',
+              'http_ensure'  => 'running',
+              'ensure_vhost' => 'present',
+              )
+            end
+          else
+            it {
+              expect { catalogue }.to raise_error(
+                %r{The my_webapp module is not supported on an unsupported based system..}, 
+              )
+            } # are we adding guardrails or just making it complicated?
+          end
+        end
+      end
+
+      describe 'Base configuration' do
+
+        let(:conf_path) do
+          if os.include?('windows')
+            'C:/Users/Administrator/AppData/Roaming/Apache24/conf'
+          else
+            '/etc/httpd/conf'
+          end
+        end
+
+        context 'my_webapp::install on #{os}' do
+          let(:facts) { os_facts }
+          
+          it { is_expected.to compile }
+          it { is_expected.to contain_package('httpd').with('ensure' => 'installed') unless %r{windows}.match?(os)}
+          it { is_expected.not_to contain_class('chocolatey') unless %r{windows}.match?(os)}
+          
+          it { is_expected.to contain_package('apache-httpd').with('ensure' => 'installed') if %r{windows}.match?(os)}
+        end
+        
+
+      end
     end
   end
 end
