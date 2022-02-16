@@ -32,10 +32,11 @@ class my_webapp::config {
         warning("Apache not supported on ${facts['kernel']}")
       }
       'Linux': {
-        my_webapp::virtual_svc { $my_webapp::servicename:
+        my_webapp::virtual_svc { "${my_webapp::servicename}.conf":
           vhost_path  => $vhost_file,
           listen_ip   => $my_webapp::listen_ip,
           websvc_port => $my_webapp::websvc_port,
+          servicename => $my_webapp::servicename
         }
       }
     }

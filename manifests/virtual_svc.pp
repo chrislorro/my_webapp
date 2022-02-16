@@ -7,22 +7,21 @@
 define my_webapp::virtual_svc (
   String $vhost_path   = $vhost_path,
   String $listen_ip    = $listen_ip,
+  String $servicename  = $servicename,
   Integer $websvc_port = $websvc_port,
 ) {
 
-  $file_owner = lookup('my_webapp::svc_owner')
+  $svc_owner = lookup('my_webapp::svc_owner')
 
-
-
-  file { "${title}.conf":
+  file { $title:
     ensure  => present,
     path    => $vhost_path,
     mode    => '0640',
     content => epp('my_webapp/web_svc.conf.epp', {
       'listen_ip'   => $listen_ip,
       'websvc_port' => $websvc_port,
-      'servicename' => $title,
+      'servicename' => $servicename,
       }),
-    owner   => $file_owner,
+    owner   => $svc_owner,
   }
 }

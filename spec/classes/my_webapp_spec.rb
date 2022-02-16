@@ -42,20 +42,20 @@ describe 'my_webapp' do
           when 'windows'
             it do
               is_expected.to contain_class('My_webapp').with(
-              'pkg_version'  => 'installed',
-              'app_user'     => 'Administrator',
-              'servicename'  => 'example',
-              'web_package'  => 'apache-httpd',
-              'web_service'  => 'apache',
-              'svc_owner'    => 'Administrator',
-              'http_config'  => 'httpd.conf',
-              'websvc_port'  => '8080',
-              'http_enable'  => 'true',
-              'websvc_user'  => '{"apache"=>{"home"=>"C:/Users"}}',
-              'listen_ip'    => '192.168.254.2',
-              'config_path'  => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf',
-              'http_ensure'  => 'running',
-              'ensure_vhost' => 'present',
+                'pkg_version'  => 'installed',
+                'app_user'     => 'Administrator',
+                'servicename'  => 'example',
+                'web_package'  => 'apache-httpd',
+                'web_service'  => 'apache',
+                'svc_owner'    => 'Administrator',
+                'http_config'  => 'httpd.conf',
+                'websvc_port'  => '8080',
+                'http_enable'  => 'true',
+                'websvc_user'  => '{"apache"=>{"home"=>"C:/Users"}}',
+                'listen_ip'    => '192.168.254.2',
+                'config_path'  => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf',
+                'http_ensure'  => 'running',
+                'ensure_vhost' => 'present',
               )
             end
           else
@@ -140,9 +140,9 @@ describe 'my_webapp' do
           
         it { is_expected.to compile }
           it do 
-            is_expected.to contain_my_webapp__virtual_svc('example').with(
+            is_expected.to contain_my_webapp__virtual_svc('example.conf').with(
               'vhost_path' => '/etc/httpd/conf/example.conf',
-            )
+            ) unless %r{windows}.match?(os)
           end
 
       end
