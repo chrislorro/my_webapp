@@ -122,7 +122,7 @@ describe 'my_webapp' do
           when 'Linux'
             it do   
               is_expected.to contain_file(http_conf).with(
-                'ensure'  => 'file',
+                'ensure'  => 'present',
                 'mode'    => '0644',
                 'owner'   => 'root',
               ).that_requires('Class[My_webapp::Install]')
@@ -130,47 +130,20 @@ describe 'my_webapp' do
           when 'windows'
             it do   
               is_expected.to contain_file(http_conf).with(
-                'ensure'  => 'file',
+                'ensure'  => 'present',
                 'mode'    => '0644',
                 'owner'   => 'Administrator',
               ).that_requires('Class[My_webapp::Install]')
             end
           end
         end
-
-        context 'mywebapp::virtual_svc' do 
-          let(:facts) { os_facts }
-        
-          let(:conf_path) do
-            if os.include?('windows')
-              'C:/Users/Administrator/AppData/Roaming/Apache24/conf'
-            else
-              '/etc/httpd/conf'
-            end
+          
+        it { is_expected.to compile }
+          it do 
+            is_expected.to contain_my_webapp__virtual_svc('example').with(
+              'vhost_path' => '/etc/httpd/conf/example.conf',
+            )
           end
-
-          it { is_expected.to compile }
-          case os_facts[:kernel]
-          when 'Linux'
-            it do 
-              is_expected.to contain_my_webapp__virtual_svc('example').with(
-              'config_path' => '/etc/httpd/conf',
-              'listen_ip'   => '192.168.254.2',
-              'websvc_port' => 8080,
-              'servicename' => 'example',
-              )
-            end
-          when 'windows'
-            it do 
-              is_expected.to contain_my_webapp__virtual_svc('example').with(
-              'config_path' => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf',
-              'listen_ip'   => '192.168.254.2',
-              'websvc_port' => 8080,
-              'servicename' => 'example',
-              )
-            end
-          end
-        end
 
       end
     end

@@ -22,10 +22,6 @@ class my_webapp (
   Optional[String]     $ensure_vhost = undef,
 ){
 
-  if $facts['kernel'] == 'windows' {
-    include chocolatey
-  }
-
   contain my_webapp::install
   contain my_webapp::config
   contain my_webapp::service

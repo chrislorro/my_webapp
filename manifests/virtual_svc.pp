@@ -5,17 +5,18 @@
 # @example
 #   my_webapp::virtual_svc { 'namevar': }
 define my_webapp::virtual_svc (
-  String $servicename  = $title,
-  String $config_path  = $config_path,
+  String $vhost_path   = $vhost_path,
   String $listen_ip    = $listen_ip,
   Integer $websvc_port = $websvc_port,
 ) {
 
   $file_owner = lookup('my_webapp::svc_owner')
 
-  file { "${title}_${websvc_port}.conf":
-    ensure  => file,
-    path    => $config_path,
+
+
+  file { "${title}.conf":
+    ensure  => present,
+    path    => $vhost_path,
     mode    => '0640',
     content => epp('my_webapp/web_svc.conf.epp', {
       'listen_ip'   => $listen_ip,

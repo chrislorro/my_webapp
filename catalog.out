@@ -1,0 +1,511 @@
+/opt/puppetlabs/pdk/private/ruby/2.5.9/bin/ruby -I/Users/christopher.lawrence/.pdk/cache/ruby/2.5.0/gems/rspec-core-3.11.0/lib:/Users/christopher.lawrence/.pdk/cache/ruby/2.5.0/gems/rspec-support-3.11.0/lib /Users/christopher.lawrence/.pdk/cache/ruby/2.5.0/gems/rspec-core-3.11.0/exe/rspec --pattern spec/\{aliases,classes,defines,functions,hosts,integration,plans,tasks,type_aliases,types,unit\}/\*\*/\*_spec.rb --format progress
+Run options: exclude {:bolt=>true}
+it { is_expected.to contain_class('Settings')
+}
+
+it { is_expected.to contain_class('My_webapp')
+  .with('pkg_version'  => 'installed')
+  .with('app_user'     => 'root')
+  .with('servicename'  => 'example')
+  .with('web_package'  => 'httpd')
+  .with('web_service'  => 'httpd')
+  .with('svc_owner'    => 'root')
+  .with('http_config'  => 'httpd.conf')
+  .with('websvc_port'  => '8080')
+  .with('http_enable'  => 'true')
+  .with('websvc_user'  => '{"httpd"=>{"home"=>"/home", "groups"=>"linx_webapps", "managehome"=>true}}')
+  .with('listen_ip'    => '192.168.254.2')
+  .with('config_path'  => '/etc/httpd/conf')
+  .with('http_ensure'  => 'running')
+  .with('ensure_vhost' => 'present')
+}
+
+it { is_expected.to contain_class('My_webapp::Install')
+  .that_comes_before('Class[My_webapp::Config]')
+}
+
+it { is_expected.to contain_package('httpd')
+  .with('ensure' => 'installed')
+}
+
+it { is_expected.to contain_class('My_webapp::Config')
+  .that_notifies('Class[My_webapp::Service]')
+}
+
+it { is_expected.to contain_user('httpd')
+  .with('ensure'     => 'present')
+  .with('home'       => '/home')
+  .with('groups'     => 'linx_webapps')
+  .with('managehome' => 'true')
+}
+
+it { is_expected.to contain_file('/etc/httpd/conf/httpd.conf')
+  .with('path'    => '/etc/httpd/conf/httpd.conf')
+  .with('ensure'  => 'file')
+  .with('mode'    => '0644')
+  .with('owner'   => 'root')
+  .that_requires('Class[My_webapp::Install]')
+}
+
+it { is_expected.to contain_my_webapp__virtual_svc('example')
+  .with('vhost_path'  => '/etc/httpd/conf/example.conf')
+  .with('listen_ip'   => '192.168.254.2')
+  .with('websvc_port' => '8080')
+  .with('servicename' => 'example')
+}
+
+it { is_expected.to contain_class('My_webapp::Service')
+}
+
+it { is_expected.to contain_service('httpd')
+  .with('ensure'    => 'running')
+  .with('enable'    => 'true')
+  .that_subscribes_to('File[/etc/httpd/conf/httpd.conf]')
+}
+
+it { is_expected.to contain_file('example_8080.conf')
+  .with('path'    => '/etc/httpd/conf/example.conf')
+  .with('ensure'  => 'file')
+  .with('mode'    => '0640')
+  .with('content' => '
+# Ensure that Apache listens on port 8080
+Listen 8080
+<VirtualHost *:80>
+    DocumentRoot /www/example
+    ServerName www.example.com
+
+</VirtualHost>
+')
+  .with('owner'   => 'root')
+}
+
+.it { is_expected.to contain_class('Settings')
+}
+
+it { is_expected.to contain_class('My_webapp')
+  .with('pkg_version'  => 'installed')
+  .with('app_user'     => 'Administrator')
+  .with('servicename'  => 'example')
+  .with('web_package'  => 'apache-httpd')
+  .with('web_service'  => 'apache')
+  .with('svc_owner'    => 'Administrator')
+  .with('http_config'  => 'httpd.conf')
+  .with('websvc_port'  => '8080')
+  .with('http_enable'  => 'true')
+  .with('websvc_user'  => '{"apache"=>{"home"=>"C:/Users"}}')
+  .with('listen_ip'    => '192.168.254.2')
+  .with('config_path'  => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf')
+  .with('http_ensure'  => 'running')
+  .with('ensure_vhost' => 'present')
+}
+
+it { is_expected.to contain_class('Chocolatey::Params')
+}
+
+it { is_expected.to contain_class('Chocolatey')
+  .with('choco_install_location'        => 'C:\ProgramData\chocolatey')
+  .with('use_7zip'                      => 'false')
+  .with('seven_zip_download_url'        => 'https://chocolatey.org/7za.exe')
+  .with('choco_install_timeout_seconds' => '1500')
+  .with('chocolatey_download_url'       => 'https://chocolatey.org/api/v2/package/chocolatey/')
+  .with('enable_autouninstaller'        => 'true')
+  .with('log_output'                    => 'false')
+}
+
+it { is_expected.to contain_class('Chocolatey::Install')
+  .that_comes_before('Class[Chocolatey::Config]')
+}
+
+it { is_expected.to contain_registry_value('ChocolateyInstall environment value')
+  .with('path'   => 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\ChocolateyInstall')
+  .with('ensure' => 'present')
+  .with('type'   => 'string')
+  .with('data'   => 'C:\ProgramData\chocolatey')
+}
+
+it { is_expected.to contain_exec('install_chocolatey_official')
+  .with('command'     => '# ==============================================================================
+# Copyright 2011 - Present RealDimensions Software, LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+# this file except in compliance with the License. You may obtain a copy of the
+# License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed
+# under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+# CONDITIONS OF ANY KIND, either express or implied. See the License for the
+# specific language governing permissions and limitations under the License.
+# ==============================================================================
+
+$ErrorActionPreference = 'Stop'
+
+# For some reason try/catch wrapping only ensures
+# that none of this script runs at all
+# https://tickets.puppetlabs.com/browse/MODULES-2634
+#try {
+
+# variables
+$url = 'https://chocolatey.org/api/v2/package/chocolatey/'
+$unzipMethod = 'windows'
+$install_proxy = $false
+$7zaExe = '\7za.exe'
+if ($env:TEMP -eq $null) {
+  $env:TEMP = Join-Path $env:SystemDrive 'temp'
+}
+$chocTempDir = Join-Path $env:TEMP "chocolatey"
+$tempDir = Join-Path $chocTempDir "chocInstall"
+if (![System.IO.Directory]::Exists($tempDir)) {[System.IO.Directory]::CreateDirectory($tempDir)}
+$file = Join-Path $tempDir "chocolatey.zip"
+$chocErrorLog = Join-Path $tempDir "chocError.log"
+
+# PowerShell v2/3 caches the output stream. Then it throws errors due
+# to the FileStream not being what is expected. Fixes "The OS handle's
+# position is not what FileStream expected. Do not use a handle
+# simultaneously in one FileStream and in Win32 code or another
+# FileStream."
+
+# This only works with the ConsoleHost (PowerShell InternalHost)
+function Fix-PowerShellOutputRedirectionBug {
+  try{
+    # http://www.leeholmes.com/blog/2008/07/30/workaround-the-os-handles-position-is-not-what-filestream-expected/ plus comments
+    $bindingFlags = [Reflection.BindingFlags] "Instance,NonPublic,GetField"
+    $objectRef = $host.GetType().GetField("externalHostRef", $bindingFlags).GetValue($host)
+    $bindingFlags = [Reflection.BindingFlags] "Instance,NonPublic,GetProperty"
+    $consoleHost = $objectRef.GetType().GetProperty("Value", $bindingFlags).GetValue($objectRef, @())
+    [void] $consoleHost.GetType().GetProperty("IsStandardOutputRedirected", $bindingFlags).GetValue($consoleHost, @())
+    $bindingFlags = [Reflection.BindingFlags] "Instance,NonPublic,GetField"
+    $field = $consoleHost.GetType().GetField("standardOutputWriter", $bindingFlags)
+    $field.SetValue($consoleHost, [Console]::Out)
+    [void] $consoleHost.GetType().GetProperty("IsStandardErrorRedirected", $bindingFlags).GetValue($consoleHost, @())
+    $field2 = $consoleHost.GetType().GetField("standardErrorWriter", $bindingFlags)
+    $field2.SetValue($consoleHost, [Console]::Error)
+  } catch {
+    Write-Output "Unable to apply redirection fix. Error: $_"
+  }
+}
+
+Fix-PowerShellOutputRedirectionBug
+
+# This should help when certain organizations have issues installing Chocolatey
+# Attempt to set highest encryption available for SecurityProtocol.
+# PowerShell will not set this by default (until maybe .NET 4.6.x). This
+# will typically produce a message for PowerShell v2 (just an info
+# message though)
+try {
+  # Set TLS 1.2 (3072), then TLS 1.1 (768), then TLS 1.0 (192), finally SSL 3.0 (48)
+  # Use integers because the enumeration values for TLS 1.2 and TLS 1.1 won't
+  # exist in .NET 4.0, even though they are addressable if .NET 4.5+ is
+  # installed (.NET 4.5 is an in-place upgrade).
+  [System.Net.ServicePointManager]::SecurityProtocol = 3072 -bor 768 -bor 192 -bor 48
+} catch {
+  Write-Output "Unable to set PowerShell to use TLS 1.2 and TLS 1.1 due to old .NET Framework installed. If you see underlying connection closed or trust errors, you may need to do one or more of the following: (1) upgrade to .NET Framework 4.5 and PowerShell v3 and/or (2) specify internal Chocolatey package location (see https://forge.puppet.com/puppetlabs/chocolatey#manage-chocolatey-installation)."
+}
+
+function Download-File {
+param (
+  [string]$url,
+  [string]$file
+ )
+  Write-Output "Downloading $url to $file"
+  $downloader = new-object System.Net.WebClient
+
+  if ($install_proxy) {
+    [System.Net.WebRequest]::DefaultWebProxy = New-Object System.Net.WebProxy($install_proxy,$true)
+  }
+
+  $downloader.Proxy.Credentials=[System.Net.CredentialCache]::DefaultNetworkCredentials;
+  $downloader.DownloadFile($url, $file)
+}
+
+# download the package
+Download-File $url $file
+
+if ($unzipMethod -eq '7zip') {
+  # unzip the package
+  Write-Output "Extracting $file to $tempDir..."
+  Start-Process "$7zaExe" -ArgumentList "x -o`"$tempDir`" -y `"$file`"" -Wait -NoNewWindow
+  Remove-Item -Path "$7zaExe" -Force
+} else {
+  if ($PSVersionTable.PSVersion.Major -lt 5) {
+    $shellApplication = new-object -com shell.application
+    $zipPackage = $shellApplication.NameSpace($file)
+    $destinationFolder = $shellApplication.NameSpace($tempDir)
+    $destinationFolder.CopyHere($zipPackage.Items(),0x10)
+  } else {
+    Expand-Archive -Path "$file" -DestinationPath "$tempDir" -Force | Out-Null
+  }
+}
+
+# call chocolatey install
+Write-Output "Installing chocolatey on this machine"
+$toolsFolder = Join-Path $tempDir "tools"
+$chocInstallPS1 = Join-Path $toolsFolder "chocolateyInstall.ps1"
+
+if ($PSVersionTable.PSVersion.Major -gt 2) {
+  & $chocInstallPS1
+} else {
+  $output = Invoke-Expression $chocInstallPS1
+  $output
+  Write-Output "Any errors that occurred during install or upgrade are logged here: $chocoErrorLog"
+  $error | out-file $chocErrorLog
+}
+
+Write-Output 'Ensuring chocolatey commands are on the path'
+$chocInstallVariableName = "ChocolateyInstall"
+$chocoPath = [Environment]::GetEnvironmentVariable($chocInstallVariableName, [System.EnvironmentVariableTarget]::User)
+if ($chocoPath -eq $null -or $chocoPath -eq '') {
+  $chocoPath = 'C:\ProgramData\Chocolatey'
+}
+
+$chocoBinPath = Join-Path $chocoPath 'bin'
+
+if ($($env:Path).ToLower().Contains($($chocoBinPath).ToLower()) -eq $false) {
+  $env:Path = [Environment]::GetEnvironmentVariable('Path',[System.EnvironmentVariableTarget]::Machine);
+}
+
+Write-Output 'Ensuring chocolatey.nupkg is in the lib folder'
+$chocoPkgDir = Join-Path $chocoPath 'lib\chocolatey'
+$nupkg = Join-Path $chocoPkgDir 'chocolatey.nupkg'
+if (![System.IO.Directory]::Exists($chocoPkgDir)) { [System.IO.Directory]::CreateDirectory($chocoPkgDir); }
+Copy-Item "$file" "$nupkg" -Force -ErrorAction SilentlyContinue
+
+#}
+#catch
+#{
+#  Write-Host "$($_.Exception.Message)"
+#  exit 1
+#}
+')
+  .with('creates'     => 'C:\ProgramData\chocolatey\bin\choco.exe')
+  .with('provider'    => 'powershell')
+  .with('timeout'     => '1500')
+  .with('logoutput'   => 'false')
+  .with('environment' => '["ChocolateyInstall=C:\\ProgramData\\chocolatey"]')
+  .that_requires('Registry_value[ChocolateyInstall environment value]')
+}
+
+it { is_expected.to contain_class('Chocolatey::Config')
+}
+
+it { is_expected.to contain_class('My_webapp::Install')
+  .that_comes_before('Class[My_webapp::Config]')
+}
+
+it { is_expected.to contain_package('apache-httpd')
+  .with('ensure'   => 'installed')
+  .with('provider' => 'chocolatey')
+}
+
+it { is_expected.to contain_class('My_webapp::Config')
+  .that_notifies('Class[My_webapp::Service]')
+}
+
+it { is_expected.to contain_user('apache')
+  .with('ensure' => 'present')
+  .with('home'   => 'C:/Users')
+}
+
+it { is_expected.to contain_file('C:/Users/Administrator/AppData/Roaming/Apache24/conf/httpd.conf')
+  .with('path'    => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf/httpd.conf')
+  .with('ensure'  => 'file')
+  .with('mode'    => '0644')
+  .with('owner'   => 'Administrator')
+  .that_requires('Class[My_webapp::Install]')
+}
+
+it { is_expected.to contain_class('My_webapp::Service')
+}
+
+it { is_expected.to contain_service('apache')
+  .with('ensure'    => 'running')
+  .with('enable'    => 'true')
+  .that_subscribes_to('File[C:/Users/Administrator/AppData/Roaming/Apache24/conf/httpd.conf]')
+}
+
+.it { is_expected.to contain_class('Settings')
+}
+
+it { is_expected.to contain_class('My_webapp')
+  .with('pkg_version'  => 'installed')
+  .with('app_user'     => 'root')
+  .with('servicename'  => 'example')
+  .with('web_package'  => 'httpd')
+  .with('web_service'  => 'httpd')
+  .with('svc_owner'    => 'root')
+  .with('http_config'  => 'httpd.conf')
+  .with('websvc_port'  => '8080')
+  .with('http_enable'  => 'true')
+  .with('websvc_user'  => '{"httpd"=>{"home"=>"/home", "groups"=>"linx_webapps", "managehome"=>true}}')
+  .with('listen_ip'    => '192.168.254.2')
+  .with('config_path'  => '/etc/httpd/conf')
+  .with('http_ensure'  => 'running')
+  .with('ensure_vhost' => 'present')
+}
+
+it { is_expected.to contain_class('My_webapp::Install')
+  .that_comes_before('Class[My_webapp::Config]')
+}
+
+it { is_expected.to contain_package('httpd')
+  .with('ensure' => 'installed')
+}
+
+it { is_expected.to contain_class('My_webapp::Config')
+  .that_notifies('Class[My_webapp::Service]')
+}
+
+it { is_expected.to contain_user('httpd')
+  .with('ensure'     => 'present')
+  .with('home'       => '/home')
+  .with('groups'     => 'linx_webapps')
+  .with('managehome' => 'true')
+}
+
+it { is_expected.to contain_file('/etc/httpd/conf/httpd.conf')
+  .with('path'    => '/etc/httpd/conf/httpd.conf')
+  .with('ensure'  => 'file')
+  .with('mode'    => '0644')
+  .with('owner'   => 'root')
+  .that_requires('Class[My_webapp::Install]')
+}
+
+it { is_expected.to contain_my_webapp__virtual_svc('example')
+  .with('vhost_path'  => '/etc/httpd/conf/example.conf')
+  .with('listen_ip'   => '192.168.254.2')
+  .with('websvc_port' => '8080')
+  .with('servicename' => 'example')
+}
+
+it { is_expected.to contain_class('My_webapp::Service')
+}
+
+it { is_expected.to contain_service('httpd')
+  .with('ensure'    => 'running')
+  .with('enable'    => 'true')
+  .that_subscribes_to('File[/etc/httpd/conf/httpd.conf]')
+}
+
+it { is_expected.to contain_file('example_8080.conf')
+  .with('path'    => '/etc/httpd/conf/example.conf')
+  .with('ensure'  => 'file')
+  .with('mode'    => '0640')
+  .with('content' => '
+# Ensure that Apache listens on port 8080
+Listen 8080
+<VirtualHost *:80>
+    DocumentRoot /www/example
+    ServerName www.example.com
+
+</VirtualHost>
+')
+  .with('owner'   => 'root')
+}
+
+.it { is_expected.to contain_class('Settings')
+}
+
+it { is_expected.to contain_class('My_webapp')
+  .with('pkg_version'  => 'installed')
+  .with('app_user'     => 'root')
+  .with('servicename'  => 'example')
+  .with('web_package'  => 'httpd')
+  .with('web_service'  => 'httpd')
+  .with('svc_owner'    => 'root')
+  .with('http_config'  => 'httpd.conf')
+  .with('websvc_port'  => '8080')
+  .with('http_enable'  => 'true')
+  .with('websvc_user'  => '{"httpd"=>{"home"=>"/home", "groups"=>"linx_webapps", "managehome"=>true}}')
+  .with('listen_ip'    => '192.168.254.2')
+  .with('config_path'  => '/etc/httpd/conf')
+  .with('http_ensure'  => 'running')
+  .with('ensure_vhost' => 'present')
+}
+
+it { is_expected.to contain_class('My_webapp::Install')
+  .that_comes_before('Class[My_webapp::Config]')
+}
+
+it { is_expected.to contain_package('httpd')
+  .with('ensure' => 'installed')
+}
+
+it { is_expected.to contain_class('My_webapp::Config')
+  .that_notifies('Class[My_webapp::Service]')
+}
+
+it { is_expected.to contain_user('httpd')
+  .with('ensure'     => 'present')
+  .with('home'       => '/home')
+  .with('groups'     => 'linx_webapps')
+  .with('managehome' => 'true')
+}
+
+it { is_expected.to contain_file('/etc/httpd/conf/httpd.conf')
+  .with('path'    => '/etc/httpd/conf/httpd.conf')
+  .with('ensure'  => 'file')
+  .with('mode'    => '0644')
+  .with('owner'   => 'root')
+  .that_requires('Class[My_webapp::Install]')
+}
+
+it { is_expected.to contain_my_webapp__virtual_svc('example')
+  .with('vhost_path'  => '/etc/httpd/conf/example.conf')
+  .with('listen_ip'   => '192.168.254.2')
+  .with('websvc_port' => '8080')
+  .with('servicename' => 'example')
+}
+
+it { is_expected.to contain_class('My_webapp::Service')
+}
+
+it { is_expected.to contain_service('httpd')
+  .with('ensure'    => 'running')
+  .with('enable'    => 'true')
+  .that_subscribes_to('File[/etc/httpd/conf/httpd.conf]')
+}
+
+it { is_expected.to contain_file('example_8080.conf')
+  .with('path'    => '/etc/httpd/conf/example.conf')
+  .with('ensure'  => 'file')
+  .with('mode'    => '0640')
+  .with('content' => '
+# Ensure that Apache listens on port 8080
+Listen 8080
+<VirtualHost *:80>
+    DocumentRoot /www/example
+    ServerName www.example.com
+
+</VirtualHost>
+')
+  .with('owner'   => 'root')
+}
+
+..
+
+Coverage Report:
+
+Total resources:   13
+Touched resources: 0
+Resource coverage:  0.00%
+
+Untouched resources:
+  Class[My_webapp::Config]
+  Class[My_webapp::Install]
+  Class[My_webapp::Service]
+  File[/etc/httpd/conf/httpd.conf]
+  File[C:/Users/Administrator/AppData/Roaming/Apache24/conf/httpd.conf]
+  File[example_8080.conf]
+  My_webapp::Virtual_svc[example]
+  Package[apache-httpd]
+  Package[httpd]
+  Service[apache]
+  Service[httpd]
+  User[apache]
+  User[httpd]
+
+
+Finished in 5.63 seconds (files took 10.85 seconds to load)
+5 examples, 0 failures
+
