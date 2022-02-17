@@ -70,7 +70,7 @@ describe 'my_webapp' do
 
       describe 'Base configuration' do
 
-        context 'my_webapp::install on #{os}' do
+        context 'my_webapp::install' do
           let(:facts) { os_facts }
           
           it { is_expected.to compile }
@@ -81,7 +81,7 @@ describe 'my_webapp' do
           it { is_expected.to contain_class('chocolatey') if %r{windows}.match?(os)}
         end
 
-        context 'my_webapp::config on #{os}' do
+        context 'my_webapp::config' do
           let(:facts) { os_facts }
 
           let(:http_conf) do
@@ -91,31 +91,6 @@ describe 'my_webapp' do
               '/etc/httpd/conf/httpd.conf'
             end
           end
-
-          # let(:params) do
-          #   if os.include?('windows')
-          #     {
-          #       :http_conf => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf',
-          #       :owner => 'Administrator',
-          #     }
-          #   else
-          #     {
-          #       :http_conf =>'/etc/httpd/conf',
-          #       :owner => 'root',
-          #     }
-          #   end
-          # end
-
-          # on_supported_os.each do |os, os_facts|
-          #   let(:facts) { os_facts }
-          #   it do   
-          #     is_expected.to contain_file(http_conf).with(
-          #       'ensure'  => 'file',
-          #       'mode'    => '0644',
-          #       'owner'   => owner,
-          #     ).that_requires('Class[My_webapp::Install]')
-          #   end
-          # end
 
           it { is_expected.to compile }
           case os_facts[:kernel]
@@ -136,16 +111,51 @@ describe 'my_webapp' do
               ).that_requires('Class[My_webapp::Install]')
             end
           end
-        end
           
-        it { is_expected.to compile }
+          it { is_expected.to compile }
           it do 
             is_expected.to contain_my_webapp__virtual_svc('example.conf').with(
               'vhost_path' => '/etc/httpd/conf/example.conf',
             ) unless %r{windows}.match?(os)
           end
+        end
+
+        context 'mywebapp::service' do
+
+          let(:http_config) {'undef'}
+          let(:params) do
+            if os.include?('windows')
+              {
+                :web_service => 'apache',
+              }
+            else
+              {
+                :web_service => 'httpd',
+              }
+            end
+          end
+
+          let(:params) do
+            super().merge({ :web_service => 'httpd.conf' })
+          end
+      
+
+          if os_facts[:osfamily] == 'RedHat'
+            it { is_expected.to contain_service('httpd').with_ensure('running') }
+            it { is_expected.to contain_service('httpd').with_enable('true') }
+            it { is_expected.to contain_service('httpd') }
+          end
+  
+          if os_facts[:osfamily] == 'windows'
+            it { is_expected.to contain_service('apache').with_ensure('running') }
+            it { is_expected.to contain_service('apache').with_enable('true') }
+            it { is_expected.to contain_service('apache') }
+          end
+        end
 
       end
+      
+      # it { is_expected.to compile.and_raise_error(/the expected error message/) }
     end
   end
 end
