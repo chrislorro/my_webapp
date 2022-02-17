@@ -124,6 +124,9 @@ describe 'my_webapp' do
 
           let(:http_config) {'undef'}
           let(:params) do
+              {
+                :http_conf => 'undef',
+              }
             if os.include?('windows')
               {
                 :web_service => 'apache',
@@ -134,12 +137,7 @@ describe 'my_webapp' do
               }
             end
           end
-
-          let(:params) do
-            super().merge({ :web_service => 'httpd.conf' })
-          end
       
-
           if os_facts[:osfamily] == 'RedHat'
             it { is_expected.to contain_service('httpd').with_ensure('running') }
             it { is_expected.to contain_service('httpd').with_enable('true') }
