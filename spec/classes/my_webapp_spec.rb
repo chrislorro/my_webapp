@@ -36,7 +36,7 @@ describe 'my_webapp' do
                 'listen_ip'    => '192.168.254.2',
                 'config_path'  => '/etc/httpd/conf',
                 'http_ensure'  => 'running',
-                'ensure_vhost' => 'present',
+                'ensure_vhost' => 'true',
               )
             end
           when 'windows'
@@ -55,7 +55,7 @@ describe 'my_webapp' do
                 'listen_ip'    => '192.168.254.2',
                 'config_path'  => 'C:/Users/Administrator/AppData/Roaming/Apache24/conf',
                 'http_ensure'  => 'running',
-                'ensure_vhost' => 'present',
+                'ensure_vhost' => 'true',
               )
             end
           else
@@ -81,8 +81,14 @@ describe 'my_webapp' do
           it { is_expected.to contain_class('chocolatey') if %r{windows}.match?(os)}
         end
 
-        context 'my_webapp::config' do
+        context 'when ensure is set to true my_webapp::config' do
           let(:facts) { os_facts }
+
+          let(:params) do
+            {
+              ensure_vhost: true,
+            }
+          end
 
           let(:http_conf) do
             if os.include?('windows')
@@ -120,6 +126,18 @@ describe 'my_webapp' do
           end
         end
 
+        # context 'when ensure is set to false my_webapp::config' do
+        #   let(:params) do
+        #     {
+        #       ensure_vhost: false,
+        #     }
+        #   end
+
+        #   it do
+        #     is_expected.not_to contain_my_webapp__virtual_svc('example.conf')
+        #   end
+        # end
+
         context 'mywebapp::service' do
 
           let(:http_config) {'undef'}
@@ -138,6 +156,10 @@ describe 'my_webapp' do
             end
           end
       
+          # let(:params) do
+          #   super().merge({ 'http_conf' => 'httpd.conf' })
+          # end
+      
           if os_facts[:osfamily] == 'RedHat'
             it { is_expected.to contain_service('httpd').with_ensure('running') }
             it { is_expected.to contain_service('httpd').with_enable('true') }
@@ -152,8 +174,13 @@ describe 'my_webapp' do
         end
 
       end
-      
-      # it { is_expected.to compile.and_raise_error(/the expected error message/) }
+
+      # context 'with ensure => whoopsiedoo' do
+      #   let(:params) { {'ensure' => 'whoopsiedoo'} }
+    
+      #   it { is_expected.to compile.and_raise_error(/the expected error message/) }
+      # end
+
     end
   end
 end

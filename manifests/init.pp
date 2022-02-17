@@ -19,7 +19,7 @@ class my_webapp (
   Stdlib::Absolutepath $config_path,
   Enum['stopped',
       'running']       $http_ensure,
-  Optional[String]     $ensure_vhost = undef,
+  Optional[Boolean]    $ensure_vhost = undef,
 ){
 
   contain my_webapp::install
