@@ -7,19 +7,19 @@
 class my_webapp (
   String               $pkg_version,
   String               $app_user,
-  String               $servicename,
   String               $web_package,
   String               $web_service,
   String               $svc_owner,
   String               $http_config,
   Integer              $websvc_port,
   Boolean              $http_enable,
-  Hash                 $websvc_user,
+  Hash                 $websvc_users,
   Stdlib::IP::Address  $listen_ip,
   Stdlib::Absolutepath $config_path,
   Enum['stopped',
       'running']       $http_ensure,
   Optional[Boolean]    $ensure_vhost = undef,
+  Optional[String[1]]  $servicename  = undef,
 ){
 
   contain my_webapp::install

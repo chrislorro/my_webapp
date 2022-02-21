@@ -30,27 +30,4 @@ describe 'my_webapp::virtual_svc' do
         # it { is_expected.to contain_file(conf_path).with_content(%r{ServerName www.example.com}) unless %r{windows}.match?(os) }
       end
     end
-
-  # let (:facts) do
-  # {
-  #   :kernel       => 'Linux',
-  #   :osfamily     => 'RedHat',
-  #   :puppetversion => '6.25.0'
-  # }
-  # end
-
-  # context "virtual_svc on Linux" do
-  #   # let(:facts) do
-  #   #   super().merge({ 'owner' => 'root' })
-  #   # end
-
-  #   it { is_expected.to compile }
-    
-  #   it { is_expected.to contain_file('example.conf')
-  #     .with('path'    => '/etc/httpd/conf/example.conf')
-  #     .with('ensure'  => 'present')
-  #     .with('mode'    => '0640')
-  #     .with('owner'   => 'root')
-  #   }    
-  # end
 end

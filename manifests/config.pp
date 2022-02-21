@@ -6,12 +6,12 @@
 #   include my_webapp::config
 class my_webapp::config {
 
-  $app_user = lookup('my_webapp::websvc_user')
+  $app_users = lookup('my_webapp::websvc_users')
+  $app_user_defaults = lookup('my_webapp::websvc_user_defaults')
 
-  $app_user.each |$user, $config| {
+  $app_users.each |$user, $config| {
     user { $user:
-      ensure => present,
-      *      => $config,
+      * => $app_user_defaults + $config,
     }
   }
 
@@ -24,16 +24,18 @@ class my_webapp::config {
     require => Class['my_webapp::install']
   }
 
-  $vhost_file = "${my_webapp::config_path}/${my_webapp::servicename}.conf"
-
   if my_webapp::ensure_vhost {
     case $facts['kernel'] {
       default: {
         warning("Apache not supported on ${facts['kernel']}")
       }
       'Linux': {
+        $default_vhost_file = $my_webapp::servicename ? {
+          String  => "${my_webapp::config_path}/${my_webapp::servicename}.conf",
+          default => fail('If ensure_vhost is set to true, then servicename needs to be set!'),
+        }
         my_webapp::virtual_svc { "${my_webapp::servicename}.conf":
-          vhost_path  => $vhost_file,
+          vhost_path  => $default_vhost_file,
           listen_ip   => $my_webapp::listen_ip,
           websvc_port => $my_webapp::websvc_port,
           servicename => $my_webapp::servicename
