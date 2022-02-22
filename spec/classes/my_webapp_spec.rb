@@ -79,14 +79,30 @@ describe 'my_webapp' do
 
       describe 'Base configuration' do
 
-        context 'my_webapp::install' do
+        # context 'my_webapp::install' do
           
-          it { is_expected.to compile }
-          it { is_expected.to contain_package('httpd').with('ensure' => 'installed') unless %r{windows}.match?(os)}
-          it { is_expected.not_to contain_class('chocolatey') unless %r{windows}.match?(os)}
+        #   it { is_expected.to compile }
+        #   it { is_expected.to contain_package('httpd').with('ensure' => 'installed') unless %r{windows}.match?(os)}
+        #   it { is_expected.not_to contain_class('chocolatey') unless %r{windows}.match?(os)}
           
-          it { is_expected.to contain_package('apache-httpd').with('ensure' => 'installed') if %r{windows}.match?(os)}
-          it { is_expected.to contain_class('chocolatey') if %r{windows}.match?(os)}
+        #   it { is_expected.to contain_package('apache-httpd').with('ensure' => 'installed') if %r{windows}.match?(os)}
+        #   it { is_expected.to contain_class('chocolatey') if %r{windows}.match?(os)}
+        # end
+
+        context 'my_webapp::install linux' do
+          if os_facts[:osfamily] == 'RedHat'
+            it { is_expected.to compile }
+            it { is_expected.to contain_package('httpd').with('ensure' => 'installed') }
+            it { is_expected.not_to contain_class('chocolatey') }
+          end  
+        end
+
+        context 'my_webapp::install Windows' do
+          if os_facts[:osfamily] == 'windows' 
+            it { is_expected.to compile }
+            it { is_expected.to contain_package('apache-httpd').with('ensure' => 'installed') }
+            it { is_expected.to contain_class('chocolatey') }
+          end  
         end
 
         context 'my_webapp::config' do
